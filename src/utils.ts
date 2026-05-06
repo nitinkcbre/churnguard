@@ -13,8 +13,26 @@ export function getStatusColor(status: TenantStatus): string {
   return '#b91c1c'
 }
 
+export function getDaysUntilRenewal(renewalDate: string): number | null {
+  const countdownRegex = /^(-?\d+)\s*days?/i
+  const countdownMatch = countdownRegex.exec(String(renewalDate).trim())
+
+  if (countdownMatch) {
+    const parsed = Number.parseInt(countdownMatch[1], 10)
+    return Number.isFinite(parsed) ? parsed : null
+  }
+
+  const parsedDate = dayjs(renewalDate)
+  if (!parsedDate.isValid()) {
+    return null
+  }
+
+  return parsedDate.diff(dayjs(), 'day')
+}
+
 export function formatLeaseCountdown(renewalDate: string): string {
-  const days = dayjs(renewalDate).diff(dayjs(), 'day')
+  const days = getDaysUntilRenewal(renewalDate)
+  if (days === null) return 'N/A'
   if (days < 0) return `${Math.abs(days)} days overdue`
   return `${days} days`
 }

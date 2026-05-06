@@ -1,4 +1,3 @@
-import RefreshIcon from '@mui/icons-material/Refresh'
 import {
   Alert,
   AppBar,
@@ -41,7 +40,7 @@ import { MiniSparkline } from '../components/MiniSparkline'
 import { StatusChip } from '../components/StatusChip'
 import { TenantStatus, type DashboardData } from '../types'
 import { useDashboardData } from '../useDashboardData'
-import { humanDateTime } from '../utils'
+import {  humanDateTime } from '../utils'
 
 type DashboardPageProps = Readonly<{
   onLogout: () => void
@@ -53,7 +52,8 @@ function kpiCards(data: DashboardData) {
     data.tenants.reduce((sum, tenant) => sum + tenant.healthScore, 0) /
     Math.max(data.tenants.length, 1)
   const renewalSoon = data.tenants.filter((tenant) => {
-    const days = dayjs(tenant.leaseRenewalDate).diff(dayjs(), 'day')
+    const days = tenant.leaseRenewalDate
+    if (days === null) return false
     return days >= 0 && days <= 120
   }).length
 
@@ -69,18 +69,14 @@ export function DashboardPage({ onLogout }: DashboardPageProps) {
   const navigate = useNavigate()
   const {
     data,
-    refresh,
     lastRefresh,
     loading,
     error,
-    autoRefreshEnabled,
-    setAutoRefreshEnabled,
   } = useDashboardData(fetchDashboardData)
 
   const [team, setTeam] = useState('Account Manager')
   const [escalateOpen, setEscalateOpen] = useState(false)
   const [snackOpen, setSnackOpen] = useState(false)
-  const [refreshInfo, setRefreshInfo] = useState<string | null>(null)
   const [selectedTenant, setSelectedTenant] = useState<{ name: string; whoShouldAct?: string | null } | null>(null)
   const [statusFilter, setStatusFilter] = useState<'ALL' | TenantStatus>('ALL')
   const selectedTenantSuffix = selectedTenant ? ` for ${selectedTenant.name}` : ''
@@ -124,11 +120,6 @@ export function DashboardPage({ onLogout }: DashboardPageProps) {
     return data.tenants.filter((tenant) => tenant.status === statusFilter)
   }, [data.tenants, statusFilter])
 
-  const handleRefreshClick = async () => {
-    await refresh()
-    setRefreshInfo('Dashboard refreshed.')
-  }
-
   return (
     <Box
       sx={{
@@ -145,11 +136,8 @@ export function DashboardPage({ onLogout }: DashboardPageProps) {
           <Typography variant="body2" color="text.secondary" sx={{ mr: 2 }}>
             Last refresh: {humanDateTime(lastRefresh)}
           </Typography>
-          <Button startIcon={<RefreshIcon />} onClick={() => void handleRefreshClick()} sx={{ mr: 1 }}>
-            Refresh
-          </Button>
-          <Button onClick={() => setAutoRefreshEnabled(!autoRefreshEnabled)} sx={{ mr: 1 }}>
-            {autoRefreshEnabled ? 'Auto refresh: Daily' : 'Auto refresh: Off'}
+          <Button disabled sx={{ mr: 1 }}>
+            Auto refresh: Daily
           </Button>
           <Button onClick={onLogout}>Logout</Button>
         </Toolbar>
@@ -376,13 +364,6 @@ export function DashboardPage({ onLogout }: DashboardPageProps) {
         autoHideDuration={3000}
         onClose={() => setSnackOpen(false)}
         message={escalationMessage}
-      />
-
-      <Snackbar
-        open={Boolean(refreshInfo)}
-        autoHideDuration={3500}
-        onClose={() => setRefreshInfo(null)}
-        message={refreshInfo ?? ''}
       />
     </Box>
   )

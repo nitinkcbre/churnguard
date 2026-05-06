@@ -152,13 +152,13 @@ export function TenantPortfolioPage({ onLogout }: TenantPortfolioPageProps) {
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <Paper sx={{ p: 2.2 }}>
               <Typography variant="body2" color="text.secondary">Lease Countdown</Typography>
-              <Typography variant="h6">{portfolio.tenant.leaseRenewalDate} days</Typography>
+              <Typography variant="h6">{formatLeaseCountdown(portfolio.tenant.leaseRenewalDate)}</Typography>
             </Paper>
           </Grid>
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <Paper sx={{ p: 2.2 }}>
-              <Typography variant="body2" color="text.secondary">Lease Value</Typography>
-              <Typography variant="h6">{portfolio.tenant.lease_value}</Typography>
+              <Typography variant="body2" color="text.secondary">Property</Typography>
+              <Typography variant="h6">{portfolio.tenant.propertyId}</Typography>
             </Paper>
           </Grid>
         </Grid>
