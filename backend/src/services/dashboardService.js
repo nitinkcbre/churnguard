@@ -277,6 +277,26 @@ function computeHealthScore({ negativeEmails, openIncidents, urgentIncidents, re
   return clamp(score, 20, 95)
 }
 
+const OFFER_CATALOG = [
+  'VIP Engineer Assignment · $0',
+  'Amenity Passport (Flex Credits) · Low',
+  'CBRE Network Spotlight · $0',
+  'Deep-Clean Credit · Low',
+]
+
+function seededIndex(seed, offset, max) {
+  if (max <= 0) return 0
+  const normalizedSeed = Number.isFinite(seed) ? Number(seed) : 0
+  const raw = (normalizedSeed * 31 + offset * 17) % max
+  return raw < 0 ? raw + max : raw
+}
+
+function buildTargetedOffers(tenantId = '') {
+  const seed = [...String(tenantId)].reduce((sum, ch) => sum + (ch.codePointAt(0) || 0), 0)
+  const idx = seededIndex(seed, 0, OFFER_CATALOG.length)
+  return [OFFER_CATALOG[idx]]
+}
+
 async function mapTenant(lease, emails, incidents, promptDoc) {
   const tenantEmails = emails.filter((item) => item.tenantId === lease.tenantId)
   const tenantIncidents = incidents.filter((item) => item.tenantId === lease.tenantId)
@@ -340,7 +360,7 @@ async function mapTenant(lease, emails, incidents, promptDoc) {
     tenantId: lease.tenantId,
     name: lease.name,
     tier: lease.tier,
-    lease_value: lease.lease_value,
+    leaseValue: lease.lease_value,
     healthScore,
     status,
     aiTrend: toTitleCaseTrend(prompt2?.trend_direction),
@@ -350,6 +370,7 @@ async function mapTenant(lease, emails, incidents, promptDoc) {
     leaseRenewalDate: lease.days_to_renewal,
     nextBestAction: prompt5Recommendation?.next_action || nextBestAction,
     whoShouldAct: prompt5Recommendation?.who_should_act || null,
+    targetedOffers: buildTargetedOffers(lease.tenantId),
   }
 }
 
@@ -616,6 +637,7 @@ export async function getTenantPortfolioPayload(tenantId) {
     aiOverview,
     riskFactors,
     recommendedAction,
+    targetedOffers: tenant.targetedOffers || [],
     sentimentTrend,
     issueTrend,
   }

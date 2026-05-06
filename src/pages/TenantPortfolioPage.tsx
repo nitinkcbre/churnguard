@@ -93,6 +93,11 @@ export function TenantPortfolioPage({ onLogout }: TenantPortfolioPageProps) {
     [portfolio],
   )
 
+  const marginAwareOffer = useMemo(
+    () => portfolio?.targetedOffers || portfolio?.tenant?.targetedOffers || [],
+    [portfolio],
+  )
+
   if (loading) {
     return (
       <Box sx={{ p: 3, display: 'flex', justifyContent: 'center' }}>
@@ -152,13 +157,13 @@ export function TenantPortfolioPage({ onLogout }: TenantPortfolioPageProps) {
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <Paper sx={{ p: 2.2 }}>
               <Typography variant="body2" color="text.secondary">Lease Countdown</Typography>
-              <Typography variant="h6">{formatLeaseCountdown(portfolio.tenant.leaseRenewalDate)}</Typography>
+              <Typography variant="h6">{portfolio.tenant.leaseRenewalDate} days</Typography>
             </Paper>
           </Grid>
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <Paper sx={{ p: 2.2 }}>
-              <Typography variant="body2" color="text.secondary">Property</Typography>
-              <Typography variant="h6">{portfolio.tenant.propertyId}</Typography>
+              <Typography variant="body2" color="text.secondary">Lease Amount</Typography>
+              <Typography variant="h6">${portfolio.tenant.leaseValue ?? 'N/A'}</Typography>
             </Paper>
           </Grid>
         </Grid>
@@ -178,7 +183,7 @@ export function TenantPortfolioPage({ onLogout }: TenantPortfolioPageProps) {
                   </CardContent>
                 </Card>
               </Grid>
-              <Grid size={{ xs: 12, md: 12 }}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <Card>
                   <CardContent>
                     <Typography variant="h6" sx={{ mb: 1 }}>Issue Trend</Typography>
@@ -188,6 +193,25 @@ export function TenantPortfolioPage({ onLogout }: TenantPortfolioPageProps) {
                         options={{ responsive: true, maintainAspectRatio: false, resizeDelay: 150 }}
                       />
                     </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Card>
+                  <CardContent>
+                    <Typography variant="h6" sx={{ mb: 1 }}>Targeted Margin-Aware Offer</Typography>
+                    <List dense>
+                      {marginAwareOffer.map((offer) => (
+                        <ListItem key={offer} sx={{ px: 0 }}>
+                          <ListItemText primary={offer} />
+                        </ListItem>
+                      ))}
+                      {marginAwareOffer.length === 0 && (
+                        <ListItem sx={{ px: 0 }}>
+                          <ListItemText primary="No targeted offers available." />
+                        </ListItem>
+                      )}
+                    </List>
                   </CardContent>
                 </Card>
               </Grid>

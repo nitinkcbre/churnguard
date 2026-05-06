@@ -267,7 +267,7 @@ export function DashboardPage({ onLogout }: DashboardPageProps) {
                       ))}
                       {filteredTenants.length === 0 && (
                         <TableRow>
-                          <TableCell colSpan={8} align="center">
+                          <TableCell colSpan={9} align="center">
                             <Typography variant="body2" color="text.secondary">
                               No tenants found for selected status.
                             </Typography>

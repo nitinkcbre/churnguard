@@ -13,6 +13,7 @@ export interface Tenant {
   name: string
   tier: TenantTier
   propertyId: string
+  leaseValue?: number | string | null
   healthScore: number
   dailySentimentScore: number
   sentimentScoreDaily?: Array<{ date: string; score: number }>
@@ -23,6 +24,7 @@ export interface Tenant {
   leaseRenewalDate: string
   nextBestAction: string
   whoShouldAct?: string | null
+  targetedOffers?: string[]
 }
 
 export interface SentimentPoint {
@@ -79,6 +81,7 @@ export interface TenantPortfolioData {
   aiOverview: string
   riskFactors: string[]
   recommendedAction: string
+  targetedOffers?: string[]
   churnProtectionSteps?: string[]
   sentimentTrend: SentimentPoint[]
   issueTrend: IssuePoint[]
