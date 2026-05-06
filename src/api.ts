@@ -46,6 +46,36 @@ export interface AiTrendUpdate {
   tenantUpdates: AiTenantUpdate[]
 }
 
+export interface PromptProcessorSentimentPoint {
+  sourceDocId: string | null
+  sentimentScore: number
+  sentimentLabel: string | null
+  frustrationSignal: boolean
+  issueCategory: string | null
+  createdAt: string | null
+  text: string
+}
+
+export interface PromptProcessorResult {
+  tenantId: string
+  sourceMessageCount: number
+  executiveSummary: string
+  riskLevel: string | null
+  keyRiskDrivers: string[]
+  recommendation: {
+    nextAction: string
+    whoShouldAct: string
+    whyItMatters: string
+    suggestedTimeframe: string
+    additionalSteps: string[]
+  }
+  sentimentSeries: PromptProcessorSentimentPoint[]
+}
+
+export function fetchPromptProcessorResult(tenantId: string): Promise<PromptProcessorResult> {
+  return request<PromptProcessorResult>(`/prompt-processor/${tenantId}`)
+}
+
 export function fetchLatestAiUpdates(): Promise<AiTrendUpdate> {
   return request<AiTrendUpdate>('/ai/updates/latest')
 }

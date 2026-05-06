@@ -14,9 +14,15 @@ export interface Tenant {
   tier: TenantTier
   propertyId: string
   healthScore: number
+  dailySentimentScore: number
+  sentimentScoreDaily?: Array<{ date: string; score: number }>
   status: TenantStatus
+  aiTrend?: 'Improving' | 'Stable' | 'Declining' | null
+  aiSentiment?: 'Positive' | 'Neutral' | 'Negative' | null
+  aiRiskLevel?: 'Low' | 'Medium' | 'High' | null
   leaseRenewalDate: string
   nextBestAction: string
+  whoShouldAct?: string | null
 }
 
 export interface SentimentPoint {
@@ -73,6 +79,7 @@ export interface TenantPortfolioData {
   aiOverview: string
   riskFactors: string[]
   recommendedAction: string
+  churnProtectionSteps?: string[]
   sentimentTrend: SentimentPoint[]
   issueTrend: IssuePoint[]
 }

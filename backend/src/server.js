@@ -25,7 +25,9 @@ app.use((err, _req, res, _next) => {
 
 try {
   await mongoose.connect(MONGODB_URI)
-  await seedIfEmpty()
+  if (String(process.env.ENABLE_MOCK_SEED || '').toLowerCase() === 'true') {
+    await seedIfEmpty()
+  }
 
   if (!process.env.AZURE_OPENAI_API_KEY) {
     console.warn('AZURE_OPENAI_API_KEY is not set. POST /api/ai/updates/generate will return 400 until configured.')
